@@ -1,7 +1,7 @@
      VMA      LMA     Size Align Out     In      Symbol
        0        0 80200000     1 . = 0x80200000
-80200000 80200000       4a     2 .text
-80200000 80200000        e     2         /tmp/kernel-f29b52.o:(.text.boot)
+80200000 80200000       94     2 .text
+80200000 80200000        e     2         /tmp/kernel-5bcab0.o:(.text.boot)
 80200000 80200000        0     1                 .L0 
 80200000 80200000        0     1                 .L0 
 80200000 80200000        0     1                 $x
@@ -9,7 +9,7 @@
 80200000 80200000        e     1                 boot
 8020000e 8020000e        0     1                 .L0 
 8020000e 8020000e        0     1                 .L0 
-8020000e 8020000e       3c     2         /tmp/kernel-f29b52.o:(.text)
+8020000e 8020000e       86     2         /tmp/kernel-5bcab0.o:(.text)
 8020000e 8020000e        0     1                 .L0 
 8020000e 8020000e        0     1                 .L0 
 8020000e 8020000e        0     1                 $x
@@ -32,68 +32,93 @@
 80200024 80200024        0     1                 .L0 
 80200024 80200024        0     1                 .L0 
 80200024 80200024        0     1                 .L0 
-80200024 80200024       26     1                 kernel_main
-8020002c 8020002c        0     1                 .L0 
-80200038 80200038        0     1                 .L0 
-8020003a 8020003a        0     1                 .L0 
-8020003a 8020003a        0     1                 .L0 
-8020003a 8020003a        0     1                 .L0 
+80200024 80200024        6     1                 sbi_call
+80200028 80200028        0     1                 .L0 
+80200028 80200028        0     1                 .L0 
+8020002a 8020002a        0     1                 .L0 
+8020002a 8020002a        0     1                 .L0 
+8020002a 8020002a        0     1                 .L0 
+8020002a 8020002a       14     1                 putchar
+8020003c 8020003c        0     1                 .L0 
+8020003c 8020003c        0     1                 .L0 
 8020003e 8020003e        0     1                 .L0 
 8020003e 8020003e        0     1                 .L0 
-80200044 80200044        0     1                 .L0 
-80200044 80200044        0     1                 .L0 
-80200048 80200048        0     1                 .L0 
-80200048 80200048        0     1                 .L0 
-80200048 80200048        0     1                 .L0 
-8020004a 8020004a        0     1                 .L0 
-8020004a 8020004a        0     1                 .L0 
-8020004c 8020004c        0     4 .bss
-8020004c 8020004c        0     1         __bss = .
-8020004c 8020004c        0     1         __bss_end = .
-8020004c 8020004c        0     1 . = ALIGN ( 4 )
-8020004c 8020004c    20000     1 . += 128 * 1024
-8022004c 8022004c        0     1 __stack_top = .
-       0        0       63     1 .debug_loclists
-       0        0       63     1         /tmp/kernel-f29b52.o:(.debug_loclists)
+8020003e 8020003e        0     1                 .L0 
+8020003e 8020003e       56     1                 kernel_main
+80200046 80200046        0     1                 .L0 
+80200052 80200052        0     1                 .L0 
+80200054 80200054        0     1                 .L0 
+80200054 80200054        0     1                 .L0 
+80200054 80200054        0     1                 .L0 
+80200058 80200058        0     1                 .L0 
+80200058 80200058        0     1                 .L0 
+8020005e 8020005e        0     1                 .L0 
+8020005e 8020005e        0     1                 .L0 
+80200062 80200062        0     1                 .L0 
+80200062 80200062        0     1                 .L0 
+80200062 80200062        0     1                 .L0 
+8020007e 8020007e        0     1                 .L0 
+8020007e 8020007e        0     1                 .L0 
+8020007e 8020007e        0     1                 .L0 
+80200084 80200084        0     1                 .L0 
+80200084 80200084        0     1                 .L0 
+80200088 80200088        0     1                 .L0 
+8020008a 8020008a        0     1                 .L0 
+8020008e 8020008e        0     1                 .L0 
+8020008e 8020008e        0     1                 .L0 
+8020008e 8020008e        0     1                 .L0 
+80200092 80200092        0     1                 .L0 
+80200094 80200094        0     1                 .L0 
+80200094 80200094        0     1                 .L0 
+80200094 80200094       10     4 .rodata
+80200094 80200094       10     1         <internal>:(.rodata.str1.1)
+802000a4 802000a4        0     4 .bss
+802000a4 802000a4        0     1         __bss = .
+802000a4 802000a4        0     1         __bss_end = .
+802000a4 802000a4        0     1 . = ALIGN ( 4 )
+802000a4 802000a4    20000     1 . += 128 * 1024
+802200a4 802200a4        0     1 __stack_top = .
+       0        0       a3     1 .debug_loclists
+       0        0       a3     1         /tmp/kernel-5bcab0.o:(.debug_loclists)
        0        0        0     1                 $d
        c        c        0     1                 .L0 
-       0        0       e1     1 .debug_abbrev
-       0        0       e1     1         /tmp/kernel-f29b52.o:(.debug_abbrev)
+       0        0      162     1 .debug_abbrev
+       0        0      162     1         /tmp/kernel-5bcab0.o:(.debug_abbrev)
        0        0        0     1                 $d
-       0        0       e3     1 .debug_info
-       0        0       e3     1         /tmp/kernel-f29b52.o:(.debug_info)
+       0        0      349     1 .debug_info
+       0        0      349     1         /tmp/kernel-5bcab0.o:(.debug_info)
        0        0        0     1                 $d
-       0        0       17     1 .debug_rnglists
-       0        0       17     1         /tmp/kernel-f29b52.o:(.debug_rnglists)
+       0        0       18     1 .debug_rnglists
+       0        0       18     1         /tmp/kernel-5bcab0.o:(.debug_rnglists)
        0        0        0     1                 $d
        c        c        0     1                 .L0 
-       0        0       48     1 .debug_str_offsets
-       0        0       48     1         /tmp/kernel-f29b52.o:(.debug_str_offsets)
+       0        0       b4     1 .debug_str_offsets
+       0        0       b4     1         /tmp/kernel-5bcab0.o:(.debug_str_offsets)
        0        0        0     1                 $d
        8        8        0     1                 .L0 
-       0        0       97     1 .debug_str
-       0        0       97     1         <internal>:(.debug_str)
-       0        0       14     1 .debug_addr
-       0        0       14     1         /tmp/kernel-f29b52.o:(.debug_addr)
+       0        0      11d     1 .debug_str
+       0        0      11d     1         <internal>:(.debug_str)
+       0        0       24     1 .debug_addr
+       0        0       24     1         /tmp/kernel-5bcab0.o:(.debug_addr)
        0        0        0     1                 $d
        8        8        0     1                 .L0 
        0        0       29     1 .comment
        0        0       29     1         <internal>:(.comment)
        0        0       47     1 .riscv.attributes
        0        0       47     1         <internal>:(.riscv.attributes)
-       0        0       44     4 .debug_frame
-       0        0       44     4         /tmp/kernel-f29b52.o:(.debug_frame)
+       0        0       64     4 .debug_frame
+       0        0       64     4         /tmp/kernel-5bcab0.o:(.debug_frame)
        0        0        0     1                 .L0 
        0        0        0     1                 $d
-       0        0       ba     1 .debug_line
-       0        0       ba     1         /tmp/kernel-f29b52.o:(.debug_line)
+       0        0      129     1 .debug_line
+       0        0      129     1         /tmp/kernel-5bcab0.o:(.debug_line)
        0        0        0     1                 .Lline_table_start0
        0        0        0     1                 $d
-       0        0       28     1 .debug_line_str
-       0        0       28     1         <internal>:(.debug_line_str)
-       0        0      160     4 .symtab
-       0        0      160     4         <internal>:(.symtab)
-       0        0       ce     1 .shstrtab
-       0        0       ce     1         <internal>:(.shstrtab)
-       0        0       68     1 .strtab
-       0        0       68     1         <internal>:(.strtab)
+       0        0       33     1 .debug_line_str
+       0        0       33     1         <internal>:(.debug_line_str)
+       0        0      190     4 .symtab
+       0        0      190     4         <internal>:(.symtab)
+       0        0       d6     1 .shstrtab
+       0        0       d6     1         <internal>:(.shstrtab)
+       0        0       7c     1 .strtab
+       0        0       7c     1         <internal>:(.strtab)
