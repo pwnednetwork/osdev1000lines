@@ -1,7 +1,7 @@
      VMA      LMA     Size Align Out     In      Symbol
        0        0 80200000     1 . = 0x80200000
 80200000 80200000      236     2 .text
-80200000 80200000        e     2         /tmp/kernel-4b424d.o:(.text.boot)
+80200000 80200000        e     2         /tmp/kernel-0a6e25.o:(.text.boot)
 80200000 80200000        0     1                 .L0 
 80200000 80200000        0     1                 .L0 
 80200000 80200000        0     1                 $x
@@ -9,7 +9,7 @@
 80200000 80200000        e     1                 boot
 8020000e 8020000e        0     1                 .L0 
 8020000e 8020000e        0     1                 .L0 
-8020000e 8020000e       84     2         /tmp/kernel-4b424d.o:(.text)
+8020000e 8020000e       84     2         /tmp/kernel-0a6e25.o:(.text)
 8020000e 8020000e        0     1                 .L0 
 8020000e 8020000e        0     1                 .L0 
 8020000e 8020000e        0     1                 $x
@@ -67,7 +67,7 @@
 80200090 80200090        0     1                 .L0 
 80200092 80200092        0     1                 .L0 
 80200092 80200092        0     1                 .L0 
-80200092 80200092      1a4     2         /tmp/common-ead5f8.o:(.text)
+80200092 80200092      1a4     2         /tmp/common-26b419.o:(.text)
 80200092 80200092        0     1                 .L0 
 80200092 80200092        0     1                 .L0 
 80200092 80200092        0     1                 $x
@@ -212,43 +212,43 @@
 8020026c 8020026c    20000     1 . += 128 * 1024
 8022026c 8022026c        0     1 __stack_top = .
        0        0      1bc     1 .debug_loclists
-       0        0       95     1         /tmp/kernel-4b424d.o:(.debug_loclists)
+       0        0       95     1         /tmp/kernel-0a6e25.o:(.debug_loclists)
        0        0        0     1                 $d
        c        c        0     1                 .L0 
-      95       95      127     1         /tmp/common-ead5f8.o:(.debug_loclists)
+      95       95      127     1         /tmp/common-26b419.o:(.debug_loclists)
       95       95        0     1                 $d
       a1       a1        0     1                 .L0 
        0        0      26f     1 .debug_abbrev
-       0        0      17c     1         /tmp/kernel-4b424d.o:(.debug_abbrev)
+       0        0      17c     1         /tmp/kernel-0a6e25.o:(.debug_abbrev)
        0        0        0     1                 $d
-     17c      17c       f3     1         /tmp/common-ead5f8.o:(.debug_abbrev)
+     17c      17c       f3     1         /tmp/common-26b419.o:(.debug_abbrev)
      17c      17c        0     1                 $d
        0        0      42e     1 .debug_info
-       0        0      2ef     1         /tmp/kernel-4b424d.o:(.debug_info)
+       0        0      2ef     1         /tmp/kernel-0a6e25.o:(.debug_info)
        0        0        0     1                 $d
-     2ef      2ef      13f     1         /tmp/common-ead5f8.o:(.debug_info)
+     2ef      2ef      13f     1         /tmp/common-26b419.o:(.debug_info)
      2ef      2ef        0     1                 $d
        0        0       33     1 .debug_rnglists
-       0        0       18     1         /tmp/kernel-4b424d.o:(.debug_rnglists)
+       0        0       18     1         /tmp/kernel-0a6e25.o:(.debug_rnglists)
        0        0        0     1                 $d
        c        c        0     1                 .L0 
-      18       18       1b     1         /tmp/common-ead5f8.o:(.debug_rnglists)
+      18       18       1b     1         /tmp/common-26b419.o:(.debug_rnglists)
       18       18        0     1                 $d
       24       24        0     1                 .L0 
        0        0      100     1 .debug_str_offsets
-       0        0       ac     1         /tmp/kernel-4b424d.o:(.debug_str_offsets)
+       0        0       ac     1         /tmp/kernel-0a6e25.o:(.debug_str_offsets)
        0        0        0     1                 $d
        8        8        0     1                 .L0 
-      ac       ac       54     1         /tmp/common-ead5f8.o:(.debug_str_offsets)
+      ac       ac       54     1         /tmp/common-26b419.o:(.debug_str_offsets)
       ac       ac        0     1                 $d
       b4       b4        0     1                 .L0 
        0        0      166     1 .debug_str
        0        0      166     1         <internal>:(.debug_str)
        0        0       84     1 .debug_addr
-       0        0       34     1         /tmp/kernel-4b424d.o:(.debug_addr)
+       0        0       34     1         /tmp/kernel-0a6e25.o:(.debug_addr)
        0        0        0     1                 $d
        8        8        0     1                 .L0 
-      34       34       50     1         /tmp/common-ead5f8.o:(.debug_addr)
+      34       34       50     1         /tmp/common-26b419.o:(.debug_addr)
       34       34        0     1                 $d
       3c       3c        0     1                 .L0 
        0        0       29     1 .comment
@@ -256,17 +256,17 @@
        0        0       47     1 .riscv.attributes
        0        0       47     1         <internal>:(.riscv.attributes)
        0        0       c4     4 .debug_frame
-       0        0       6c     4         /tmp/kernel-4b424d.o:(.debug_frame)
+       0        0       6c     4         /tmp/kernel-0a6e25.o:(.debug_frame)
        0        0        0     1                 .L0 
        0        0        0     1                 $d
-      6c       6c       58     4         /tmp/common-ead5f8.o:(.debug_frame)
+      6c       6c       58     4         /tmp/common-26b419.o:(.debug_frame)
       6c       6c        0     1                 .L0 
       6c       6c        0     1                 $d
        0        0      39d     1 .debug_line
-       0        0      12a     1         /tmp/kernel-4b424d.o:(.debug_line)
+       0        0      12a     1         /tmp/kernel-0a6e25.o:(.debug_line)
        0        0        0     1                 .Lline_table_start0
        0        0        0     1                 $d
-     12a      12a      273     1         /tmp/common-ead5f8.o:(.debug_line)
+     12a      12a      273     1         /tmp/common-26b419.o:(.debug_line)
      12a      12a        0     1                 .Lline_table_start0
      12a      12a        0     1                 $d
        0        0       45     1 .debug_line_str
