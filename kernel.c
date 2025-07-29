@@ -34,9 +34,10 @@ void kernel_main(void) {
   printf("\n\nHello %s\n", "World!");
   printf("1 + 2 = %d, %x\n", 1 + 2, 0x1234abcd);
 
-  if (!strcmp("aaa", "aaa")) {
-    printf("strcmp works\n");
-  }
+  printf("1\n");
+  PANIC("PANIC");
+  printf("2\n");
+  printf("3\n");
 
   for (;;) {
     __asm__ __volatile__("wfi");
