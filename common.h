@@ -1,4 +1,11 @@
+// ░█▀▀░█▀█░█▄█░█▄█░█▀█░█▀█░░░█░█
+// ░█░░░█░█░█░█░█░█░█░█░█░█░░░█▀█
+// ░▀▀▀░▀▀▀░▀░▀░▀░▀░▀▀▀░▀░▀░▀░▀░▀
+
+// common.h
 #pragma once
+
+// types
 
 typedef int bool;
 typedef unsigned char uint8_t;
@@ -8,6 +15,8 @@ typedef unsigned long long uint64_t;
 typedef uint32_t size_t;
 typedef uint32_t paddr_t;
 typedef uint32_t vaddr_t;
+
+// macros
 
 #define true 1
 #define false 0
@@ -20,9 +29,39 @@ typedef uint32_t vaddr_t;
 #define va_end __builtin_va_end
 #define va_arg __builtin_va_arg
 
-void printf(const char *fmt, ...);
+#define PANIC(fmt, ...)                                                        \
+  do {                                                                         \
+    printf("PANIC: %s:%d: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__);      \
+    while (1) {                                                                \
+    }                                                                          \
+  } while (0)
 
+// structures
+
+struct sbiret {
+  long error;
+  long value;
+};
+
+// memory
+#define PAGE_SIZE 4096
+
+/*---------- functions
+ * ---------------------------------------------------------*/
+
+// sets an area of memory to a certain character c
 void *memset(void *buf, char c, size_t n);
+// copies from dst to src of size n, unsafe
 void *memcpy(void *dst, const void *src, size_t n);
+// copies string from src to dst, definitely unsafe
 char *strcpy(char *dst, const char *src);
+// compares s1 to s2
 int strcmp(const char *s1, const char *s2);
+
+// sbi call wraper
+struct sbiret sbi_call(long arg0, long arg1, long arg2, long arg3, long arg4,
+                       long arg5, long fid, long eid);
+
+// some functions for text output
+void putchar(char ch);
+void printf(const char *fmt, ...);
