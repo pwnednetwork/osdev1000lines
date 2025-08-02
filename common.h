@@ -16,7 +16,19 @@ typedef uint32_t size_t;
 typedef uint32_t paddr_t;
 typedef uint32_t vaddr_t;
 
-// macros
+// globals
+
+extern char __free_ram[], __free_ram_end[];
+
+// page table macros
+#define SATP_SV32 (1u << 31)
+#define PAGE_V (1 << 0) // "Valid" bit (entry is enabled)
+#define PAGE_R (1 << 1) // Readable
+#define PAGE_W (1 << 2) // Writable
+#define PAGE_X (1 << 3) // Executable
+#define PAGE_U (1 << 4) // User (accessible in user mode)
+
+// other macros
 
 #define true 1
 #define false 0
@@ -46,8 +58,12 @@ struct sbiret {
 // memory
 #define PAGE_SIZE 4096
 
-/*---------- functions
- * ---------------------------------------------------------*/
+/*---------- functions-------------------------------------------------------*/
+
+// page_table
+paddr_t alloc_pages(uint32_t n);
+
+void map_page(uint32_t *table1, uint32_t vaddr, paddr_t paddr, uint32_t flags);
 
 // sets an area of memory to a certain character c
 void *memset(void *buf, char c, size_t n);

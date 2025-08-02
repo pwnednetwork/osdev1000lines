@@ -96,21 +96,6 @@ __attribute__((naked)) __attribute__((aligned(4))) void kernel_entry(void) {
                        "sret\n");
 } // kernel_entry
 
-// memory alloc
-extern char __free_ram[], __free_ram_end[];
-
-paddr_t alloc_pages(uint32_t n) {
-  static paddr_t next_paddr = (paddr_t)__free_ram;
-  paddr_t paddr = next_paddr;
-  next_paddr += n * PAGE_SIZE;
-
-  if (next_paddr > (paddr_t)__free_ram_end)
-    PANIC("out of memory");
-
-  memset((void *)paddr, 0, n * PAGE_SIZE);
-  return paddr;
-} // alloc_pages
-
 // sections of memory and elf file
 extern char __bss[], __bss_end[], __stack_top[];
 
@@ -133,7 +118,7 @@ void memory_test() {
     PANIC("__free_ram!=paddr0");
   }
   printf("---- test succeeded\n");
-}
+} // memory_test
 
 /* ----------- test context switch --------------- */
 
@@ -142,12 +127,23 @@ void delay(void) {
     __asm__ __volatile__("nop"); // do nothing
 } // delay
 
+void sleep() {
+  int counter = 10000;
+  while (counter)
+    counter++;
+}
+
 struct process *proc_a;
 struct process *proc_b;
-
+int proc_count = 0;
+const int MAX_COUNT = 5000;
 void proc_a_entry(void) {
   printf("starting process A\n");
   while (1) {
+    sleep();
+    if (proc_count > MAX_COUNT)
+      break;
+    proc_count++;
 
     putchar('A');
     //    switch_context(&proc_a->sp, &proc_b->sp);
@@ -159,6 +155,11 @@ void proc_a_entry(void) {
 void proc_b_entry(void) {
   printf("starting process B\n");
   while (1) {
+    sleep();
+    if (proc_count > MAX_COUNT)
+      break;
+    proc_count++;
+
     putchar('B');
     //    switch_context(&proc_b->sp, &proc_a->sp);
     //   delay();
@@ -171,13 +172,15 @@ void proc_b_entry(void) {
 void test_proc()
 
 {
+  printf("beginning process test\n");
   idle_proc = create_process((uint32_t)NULL);
   idle_proc->pid = 0; // idle
   current_proc = idle_proc;
 
   proc_a = create_process((uint32_t)proc_a_entry);
   proc_b = create_process((uint32_t)proc_b_entry);
-  // proc_a_entry();
+  //  proc_a_entry();
+  // proc_b_entry();
   yield();
 } // void test_proc()
 
@@ -196,7 +199,7 @@ void kernel_main(void) {
 
   ////////////////////////////////////////////////////////
   ///////// tests
-  memory_test();
+  //  memory_test();
   test_proc();
   printf("kernel_main(): booted\n");
 

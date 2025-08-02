@@ -50,12 +50,13 @@ __attribute__((naked)) void switch_context(uint32_t *prev_sp /* a0  */,
 }
 
 struct process procs[PROCS_MAX]; // All process control structures.
-
+extern char __kernel_base[];
 struct process *create_process(uint32_t pc) {
-  // Find an unused process control structure.
+  // find an unused process control structure.
   struct process *proc = NULL;
   int i;
   for (i = 0; i < PROCS_MAX; i++) {
+    // iterate through all procs array
     if (procs[i].state == PROC_UNUSED) {
       proc = &procs[i];
       break;
@@ -65,7 +66,7 @@ struct process *create_process(uint32_t pc) {
   if (!proc)
     PANIC("no free process slots");
 
-  // Stack callee-saved registers. These register values will be restored in
+  // stack callee-saved registers. These register values will be restored in
   // the first context switch in switch_context.
   uint32_t *sp = (uint32_t *)&proc->stack[sizeof(proc->stack)];
   *--sp = 0;            // s11
@@ -82,15 +83,20 @@ struct process *create_process(uint32_t pc) {
   *--sp = 0;            // s0
   *--sp = (uint32_t)pc; // ra
 
-  // Initialize fields.
+  uint32_t *page_table = (uint32_t *)alloc_pages(1);
+  for (paddr_t paddr = (paddr_t)__kernel_base; paddr < (paddr_t)__free_ram_end;
+       paddr += PAGE_SIZE)
+    map_page(page_table, paddr, paddr, PAGE_R | PAGE_W | PAGE_X);
+
   proc->pid = i + 1;
   proc->state = PROC_RUNNABLE;
   proc->sp = (uint32_t)sp;
+  proc->page_table = page_table;
   return proc;
 } // switch_context
 
-struct process *current_proc; // Currently running process
-struct process *idle_proc;    // Idle process
+struct process *current_proc; // current process
+struct process *idle_proc;    // idle process
 
 void yield(void) {
   // Search for a runnable process
@@ -107,9 +113,13 @@ void yield(void) {
     return;
 
   __asm__ __volatile__(
+      "sfence.vma\n"
+      "csrw satp, %[satp]\n"
+      "sfence.vma\n"
       "csrw sscratch, %[sscratch]\n"
       :
-      : [sscratch] "r"((uint32_t)&next->stack[sizeof(next->stack)]));
+      : [satp] "r"(SATP_SV32 | ((uint32_t)next->page_table / PAGE_SIZE)),
+        [sscratch] "r"((uint32_t)&next->stack[sizeof(next->stack)]));
 
   // switch
   struct process *prev = current_proc;
