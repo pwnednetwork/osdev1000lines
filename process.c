@@ -4,6 +4,9 @@
 
 #include "process.h"
 
+struct process procs[PROCS_MAX]; // All process control structures.
+extern char __kernel_base[];
+
 /*-------------- process -------------------------*/
 __attribute__((naked)) void switch_context(uint32_t *prev_sp /* a0  */,
                                            uint32_t *next_sp /* a1 */) {
@@ -49,8 +52,6 @@ __attribute__((naked)) void switch_context(uint32_t *prev_sp /* a0  */,
       "ret\n");
 }
 
-struct process procs[PROCS_MAX]; // All process control structures.
-extern char __kernel_base[];
 struct process *create_process(uint32_t pc) {
   // find an unused process control structure.
   struct process *proc = NULL;

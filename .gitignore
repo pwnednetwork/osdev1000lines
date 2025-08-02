@@ -1,3 +1,9 @@
-kernel.elf
-kernel.map
-qemu.log
+/disk/*
+!/disk/.gitkeep
+*.map
+*.tar
+*.o
+*.elf
+*.bin
+*.log
+*.pcap
