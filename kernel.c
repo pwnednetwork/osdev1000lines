@@ -14,7 +14,6 @@ extern char __stack_top[];
 extern char __bss[], __bss_end[];
 extern char __free_ram[], __free_ram_end[];
 extern char _binary_shell_bin_start[], _binary_shell_bin_size[];
-
 // memory alloc
 
 paddr_t alloc_pages(uint32_t n) {
@@ -140,6 +139,7 @@ __attribute__((naked)) __attribute__((aligned(4))) void kernel_entry(void) {
 } // kernel_entry
 
 // sections of memory and elf file
+extern char _binary_shell_bin_start[], _binary_shell_bin_size[];
 
 void exception_test() {
   WRITE_CSR(stvec, (uint32_t)kernel_entry); // exception test
@@ -215,14 +215,15 @@ void test_proc()
 
 {
   printf("beginning process test\n");
-  idle_proc = create_process((uint32_t)NULL);
+  idle_proc = create_process(NULL, 0);
   idle_proc->pid = 0; // idle
   current_proc = idle_proc;
 
-  proc_a = create_process((uint32_t)proc_a_entry);
-  proc_b = create_process((uint32_t)proc_b_entry);
+  // proc_a = create_process((uint32_t)proc_a_entry);
+  //  proc_b = create_process((uint32_t)proc_b_entry);
   //  proc_a_entry();
   // proc_b_entry();
+  create_process(_binary_shell_bin_start, (size_t)_binary_shell_bin_size);
   yield();
 } // void test_proc()
 
@@ -238,11 +239,19 @@ void kernel_main(void) {
   memset(__bss, 0, bss_size);
   const char *s = "kernel_main() loading \n";
   printf("%s", s);
+  WRITE_CSR(stvec, (uint32_t)kernel_entry);
 
+  idle_proc = create_process(NULL, 0); // updated!
+  idle_proc->pid = 0;                  // idle
+  current_proc = idle_proc;
+  create_process(_binary_shell_bin_start, (size_t)_binary_shell_bin_size);
+
+  yield();
+  PANIC("switched to idle process");
   ////////////////////////////////////////////////////////
   ///////// tests
   //  memory_test();
-  test_proc();
+  //  test_proc();
   printf("kernel_main(): booted\n");
 
   ////////////////////////////////////////////////////////

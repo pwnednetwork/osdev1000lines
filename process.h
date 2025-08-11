@@ -8,6 +8,9 @@
 
 #include "common.h"
 
+// setting exception pin when going to u-mode
+#define SSTATUS_SPIE (1 << 5)
+
 /*---------------- process ------------------------------------------------*/
 
 #define PROCS_MAX 8 // maximum number of processes
@@ -15,6 +18,7 @@
 #define PROC_UNUSED 0   // unused process control structure
 #define PROC_RUNNABLE 1 // runnable process
 
+#define USER_BASE 0x1000000
 struct process {
   int pid;    // process ID
   int state;  // process state: PROC_UNUSED or PROC_RUNNABLE
@@ -28,7 +32,8 @@ struct process {
 // globals
 
 extern struct process procs[PROCS_MAX]; // global process list
-struct process *create_process(uint32_t pc);
+
+struct process *create_process(const void *image, size_t image_size);
 
 extern struct process *current_proc;
 extern struct process *idle_proc; // Idle process

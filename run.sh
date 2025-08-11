@@ -17,7 +17,7 @@ $OBJCOPY -Ibinary -Oelf32-littleriscv shell.bin shell.bin.o
 
 # build the kernel
 $CC $CFLAGS -Wl,-Tkernel.ld -Wl,-Map=kernel.map -o kernel.elf \
-  kernel.c common.c process.c
+  kernel.c common.c process.c shell.bin.o
 
 # Start QEMU
 

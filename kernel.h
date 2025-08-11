@@ -42,8 +42,10 @@ struct trap_frame {
   uint32_t sp;
 } __attribute__((packed));
 
-// macros for reading and writing CPU CSR registers
+// setting exception pin when going to u-mode
+#define SSTATUS_SPIE (1 << 5)
 
+// macros for reading and writing CPU CSR registers
 #define READ_CSR(reg)                                                          \
   ({                                                                           \
     unsigned long __tmp;                                                       \
