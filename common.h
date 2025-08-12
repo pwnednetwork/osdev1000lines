@@ -16,6 +16,11 @@ typedef uint32_t size_t;
 typedef uint32_t paddr_t;
 typedef uint32_t vaddr_t;
 
+// syscalls
+
+#define SYS_PUTCHAR 1
+#define SYS_GETCHAR 2
+#define SYS_EXIT 3
 // globals
 
 extern char __free_ram[], __free_ram_end[];
@@ -50,10 +55,10 @@ extern char __free_ram[], __free_ram_end[];
 
 // structures
 
-struct sbiret {
-  long error;
-  long value;
-};
+// struct sbiret {
+//   long error;
+//   long value;
+// };
 
 // memory
 #define PAGE_SIZE 4096
@@ -61,9 +66,10 @@ struct sbiret {
 /*---------- functions-------------------------------------------------------*/
 
 // page_table
-paddr_t alloc_pages(uint32_t n);
-
-void map_page(uint32_t *table1, uint32_t vaddr, paddr_t paddr, uint32_t flags);
+extern paddr_t alloc_pages(uint32_t n);
+//
+extern void map_page(uint32_t *table1, uint32_t vaddr, paddr_t paddr, uint32_t);
+// flags);
 
 // sets an area of memory to a certain character c
 void *memset(void *buf, char c, size_t n);
@@ -75,8 +81,8 @@ char *strcpy(char *dst, const char *src);
 int strcmp(const char *s1, const char *s2);
 
 // sbi call wraper
-struct sbiret sbi_call(long arg0, long arg1, long arg2, long arg3, long arg4,
-                       long arg5, long fid, long eid);
+// struct sbiret sbi_call(long arg0, long arg1, long arg2, long arg3, long arg4,
+//                        long arg5, long fid, long eid);
 
 // some functions for text output
 void putchar(char ch);

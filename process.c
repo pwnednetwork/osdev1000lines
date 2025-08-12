@@ -65,6 +65,7 @@ __attribute__((naked)) void user_entry(void) {
                        :
                        : [sepc] "r"(USER_BASE), [sstatus] "r"(SSTATUS_SPIE));
 }
+
 struct process *create_process(const void *image, size_t image_size) {
   // find an unused process control structure.
   struct process *proc = NULL;
@@ -126,7 +127,6 @@ struct process *current_proc; // current process
 struct process *idle_proc;    // idle process
 
 void yield(void) {
-  // Search for a runnable process
   struct process *next = idle_proc;
   for (int i = 0; i < PROCS_MAX; i++) {
     struct process *proc = &procs[(current_proc->pid + i) % PROCS_MAX];
@@ -139,6 +139,9 @@ void yield(void) {
   if (next == current_proc)
     return;
 
+  struct process *prev = current_proc;
+  current_proc = next;
+
   __asm__ __volatile__(
       "sfence.vma\n"
       "csrw satp, %[satp]\n"
@@ -148,10 +151,36 @@ void yield(void) {
       : [satp] "r"(SATP_SV32 | ((uint32_t)next->page_table / PAGE_SIZE)),
         [sscratch] "r"((uint32_t)&next->stack[sizeof(next->stack)]));
 
-  // switch
-  struct process *prev = current_proc;
-  current_proc = next;
   switch_context(&prev->sp, &next->sp);
-} // yiedl
+}
+
+// void yield(void) {
+//   // Search for a runnable process
+//   struct process *next = idle_proc;
+//   for (int i = 0; i < PROCS_MAX; i++) {
+//     struct process *proc = &procs[(current_proc->pid + i) % PROCS_MAX];
+//     if (proc->state == PROC_RUNNABLE && proc->pid > 0) {
+//       next = proc;
+//       break;
+//     }
+//   }
+//
+//   if (next == current_proc)
+//     return;
+//
+//   __asm__ __volatile__(
+//       "sfence.vma\n"
+//       "csrw satp, %[satp]\n"
+//       "sfence.vma\n"
+//       "csrw sscratch, %[sscratch]\n"
+//       :
+//       : [satp] "r"(SATP_SV32 | ((uint32_t)next->page_table / PAGE_SIZE)),
+//         [sscratch] "r"((uint32_t)&next->stack[sizeof(next->stack)]));
+//
+//   // switch
+//   struct process *prev = current_proc;
+//   current_proc = next;
+//   switch_context(&prev->sp, &next->sp);
+// } // yield
 
 /* -------------- end of process ---------------------------------- */
