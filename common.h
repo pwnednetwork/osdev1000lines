@@ -25,6 +25,9 @@ typedef uint32_t vaddr_t;
 
 extern char __free_ram[], __free_ram_end[];
 
+// virtio
+#define VIRTIO_BLK_PADDR 0x10001000
+
 // page table macros
 #define SATP_SV32 (1u << 31)
 #define PAGE_V (1 << 0) // "Valid" bit (entry is enabled)

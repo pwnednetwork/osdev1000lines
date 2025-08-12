@@ -53,6 +53,7 @@ __attribute__((naked)) void switch_context(uint32_t *prev_sp /* a0  */,
       "ret\n");
 }
 
+// user_entry
 // ↓ __attribute__((naked)) is very important!
 __attribute__((naked)) void user_entry(void) {
   // 1. set program counter in the sepc
@@ -65,6 +66,7 @@ __attribute__((naked)) void user_entry(void) {
                        : [sepc] "r"(USER_BASE), [sstatus] "r"(SSTATUS_SPIE));
 }
 
+// create_process
 struct process *create_process(const void *image, size_t image_size) {
   // find an unused process control structure.
   struct process *proc = NULL;
@@ -102,6 +104,9 @@ struct process *create_process(const void *image, size_t image_size) {
   for (paddr_t paddr = (paddr_t)__kernel_base; paddr < (paddr_t)__free_ram_end;
        paddr += PAGE_SIZE)
     map_page(page_table, paddr, paddr, PAGE_R | PAGE_W | PAGE_X);
+
+  // map the MMIO
+  map_page(page_table, VIRTIO_BLK_PADDR, VIRTIO_BLK_PADDR, PAGE_R | PAGE_W);
 
   // map user pages
   for (uint32_t off = 0; off < image_size; off += PAGE_SIZE) {
