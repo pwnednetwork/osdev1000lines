@@ -9,7 +9,6 @@ extern char __kernel_base[];
 
 extern char _binary_shell_bin_start[], _binary_shell_bin_size[];
 
-/*-------------- process -------------------------*/
 __attribute__((naked)) void switch_context(uint32_t *prev_sp /* a0  */,
                                            uint32_t *next_sp /* a1 */) {
   // sw -> store word
@@ -126,6 +125,8 @@ struct process *create_process(const void *image, size_t image_size) {
 struct process *current_proc; // current process
 struct process *idle_proc;    // idle process
 
+// voluntarily give up control and have next process run
+// (we don't have a very sophisticated scheduler yet)
 void yield(void) {
   struct process *next = idle_proc;
   for (int i = 0; i < PROCS_MAX; i++) {
@@ -153,34 +154,3 @@ void yield(void) {
 
   switch_context(&prev->sp, &next->sp);
 }
-
-// void yield(void) {
-//   // Search for a runnable process
-//   struct process *next = idle_proc;
-//   for (int i = 0; i < PROCS_MAX; i++) {
-//     struct process *proc = &procs[(current_proc->pid + i) % PROCS_MAX];
-//     if (proc->state == PROC_RUNNABLE && proc->pid > 0) {
-//       next = proc;
-//       break;
-//     }
-//   }
-//
-//   if (next == current_proc)
-//     return;
-//
-//   __asm__ __volatile__(
-//       "sfence.vma\n"
-//       "csrw satp, %[satp]\n"
-//       "sfence.vma\n"
-//       "csrw sscratch, %[sscratch]\n"
-//       :
-//       : [satp] "r"(SATP_SV32 | ((uint32_t)next->page_table / PAGE_SIZE)),
-//         [sscratch] "r"((uint32_t)&next->stack[sizeof(next->stack)]));
-//
-//   // switch
-//   struct process *prev = current_proc;
-//   current_proc = next;
-//   switch_context(&prev->sp, &next->sp);
-// } // yield
-
-/* -------------- end of process ---------------------------------- */

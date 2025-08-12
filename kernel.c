@@ -2,6 +2,7 @@
 #include "common.h"
 #include "process.h"
 
+// bunch of externs to work with memory
 extern char __kernel_base[];
 extern char __stack_top[];
 extern char __bss[], __bss_end[];
@@ -46,6 +47,7 @@ struct sbiret sbi_call(long arg0, long arg1, long arg2, long arg3, long arg4,
   return (struct sbiret){.error = a0, .value = a1};
 }
 
+// allocate next page and zero it out
 paddr_t alloc_pages(uint32_t n) {
   static paddr_t next_paddr = (paddr_t)__free_ram;
   paddr_t paddr = next_paddr;
@@ -58,6 +60,11 @@ paddr_t alloc_pages(uint32_t n) {
   return paddr;
 }
 
+// map pages using riscv's Sv32's page table
+// vpn: virtual page number
+// pfn: physical frame number
+// pages are virtual, frames are physical
+// Sv32 uses two-level page table
 void map_page(uint32_t *table1, uint32_t vaddr, paddr_t paddr, uint32_t flags) {
   if (!is_aligned(vaddr, PAGE_SIZE))
     PANIC("unaligned vaddr %x", vaddr);
@@ -76,12 +83,12 @@ void map_page(uint32_t *table1, uint32_t vaddr, paddr_t paddr, uint32_t flags) {
   table0[vpn0] = ((paddr / PAGE_SIZE) << 10) | flags | PAGE_V;
 }
 
-void putchar(char ch) {
-  sbi_call(ch, 0, 0, 0, 0, 0, 0, 1 /* Console Putchar */);
-}
+// putchar using riscv's shenanigans hidden awayin sbi_call
+void putchar(char ch) { sbi_call(ch, 0, 0, 0, 0, 0, 0, 1 /* putchar */); }
 
+// same as putchar, except we are getting something out
 long getchar(void) {
-  struct sbiret ret = sbi_call(0, 0, 0, 0, 0, 0, 0, 2);
+  struct sbiret ret = sbi_call(0, 0, 0, 0, 0, 0, 0, 2 /* getchar */);
   return ret.error;
 }
 
@@ -162,78 +169,9 @@ __attribute__((naked)) __attribute__((aligned(4))) void kernel_entry(void) {
                        "sret\n");
 }
 
-/* __attribute__((naked)) void user_entry(void) { */
-/* __asm__ __volatile__( */
-/* "csrw sepc, %[sepc]\n" */
-/* "csrw sstatus, %[sstatus]\n" */
-/* "sret\n" */
-/* : */
-/* : [sepc] "r"(USER_BASE), [sstatus] "r"(SSTATUS_SPIE | SSTATUS_SUM)); */
-/* } */
-
-/* __attribute__((naked)) void switch_context(uint32_t *prev_sp, */
-/* uint32_t *next_sp) { */
-/* __asm__ __volatile__("addi sp, sp, -13 * 4\n" */
-/* "sw ra,  0  * 4(sp)\n" */
-/* "sw s0,  1  * 4(sp)\n" */
-/* "sw s1,  2  * 4(sp)\n" */
-/* "sw s2,  3  * 4(sp)\n" */
-/* "sw s3,  4  * 4(sp)\n" */
-/* "sw s4,  5  * 4(sp)\n" */
-/* "sw s5,  6  * 4(sp)\n" */
-/* "sw s6,  7  * 4(sp)\n" */
-/* "sw s7,  8  * 4(sp)\n" */
-/* "sw s8,  9  * 4(sp)\n" */
-/* "sw s9,  10 * 4(sp)\n" */
-/* "sw s10, 11 * 4(sp)\n" */
-/* "sw s11, 12 * 4(sp)\n" */
-/* "sw sp, (a0)\n" */
-/* "lw sp, (a1)\n" */
-/* "lw ra,  0  * 4(sp)\n" */
-/* "lw s0,  1  * 4(sp)\n" */
-/* "lw s1,  2  * 4(sp)\n" */
-/* "lw s2,  3  * 4(sp)\n" */
-/* "lw s3,  4  * 4(sp)\n" */
-/* "lw s4,  5  * 4(sp)\n" */
-/* "lw s5,  6  * 4(sp)\n" */
-/* "lw s6,  7  * 4(sp)\n" */
-/* "lw s7,  8  * 4(sp)\n" */
-/* "lw s8,  9  * 4(sp)\n" */
-/* "lw s9,  10 * 4(sp)\n" */
-/* "lw s10, 11 * 4(sp)\n" */
-/* "lw s11, 12 * 4(sp)\n" */
-/* "addi sp, sp, 13 * 4\n" */
-/* "ret\n"); */
-/* } */
-
-/* void yield(void) { */
-/* struct process *next = idle_proc; */
-/* for (int i = 0; i < PROCS_MAX; i++) { */
-/* struct process *proc = &procs[(current_proc->pid + i) % PROCS_MAX]; */
-/* if (proc->state == PROC_RUNNABLE && proc->pid > 0) { */
-/* next = proc; */
-/* break; */
-/* } */
-/* } */
-
-/* if (next == current_proc) */
-/* return; */
-
-/* struct process *prev = current_proc; */
-/* current_proc = next; */
-
-/* __asm__ __volatile__( */
-/* "sfence.vma\n" */
-/* "csrw satp, %[satp]\n" */
-/* "sfence.vma\n" */
-/* "csrw sscratch, %[sscratch]\n" */
-/* : */
-/* : [satp] "r"(SATP_SV32 | ((uint32_t)next->page_table / PAGE_SIZE)), */
-/* [sscratch] "r"((uint32_t)&next->stack[sizeof(next->stack)])); */
-
-/* switch_context(&prev->sp, &next->sp); */
-/* } */
-
+// handle_syscall is essentially one big switch statement that
+// selects what the syscall is and handles it
+// the syscall number itself is in f->a3, the data is in f->a0
 void handle_syscall(struct trap_frame *f) {
   switch (f->a3) {
   case SYS_PUTCHAR:
@@ -261,6 +199,7 @@ void handle_syscall(struct trap_frame *f) {
   }
 }
 
+// handle traps including syscalls using trap_frame
 void handle_trap(struct trap_frame *f) {
   uint32_t scause = READ_CSR(scause);
   uint32_t stval = READ_CSR(stval);
@@ -276,12 +215,11 @@ void handle_trap(struct trap_frame *f) {
   WRITE_CSR(sepc, user_pc);
 }
 
+// boot jumps here
 void kernel_main(void) {
   memset(__bss, 0, (size_t)__bss_end - (size_t)__bss);
   printf("\n\n");
   WRITE_CSR(stvec, (uint32_t)kernel_entry);
-  //    virtio_blk_init();
-  //  fs_init();
 
   idle_proc = create_process(NULL, 0);
   idle_proc->pid = 0; // idle
@@ -293,6 +231,7 @@ void kernel_main(void) {
   PANIC("switched to idle process");
 }
 
+// main booting function
 __attribute__((section(".text.boot"))) __attribute__((naked)) void boot(void) {
   __asm__ __volatile__("mv sp, %[stack_top]\n"
                        "j kernel_main\n"
