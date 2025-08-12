@@ -9,22 +9,24 @@
 
 // trap defines
 
+// processes
 #define PROCS_MAX 8
 #define PROC_UNUSED 0
 #define PROC_RUNNABLE 1
 #define PROC_EXITED 2
+// riscv page table sv32
 #define SATP_SV32 (1u << 31)
 #define SSTATUS_SPIE (1 << 5)
 #define SSTATUS_SUM (1 << 18)
 #define SCAUSE_ECALL 8
+// page mapping
 #define PAGE_V (1 << 0)
 #define PAGE_R (1 << 1)
 #define PAGE_W (1 << 2)
 #define PAGE_X (1 << 3)
 #define PAGE_U (1 << 4)
 #define USER_BASE 0x1000000
-#define FILES_MAX 2
-#define DISK_MAX_SIZE align_up(sizeof(struct file) * FILES_MAX, SECTOR_SIZE)
+// virtio
 #define SECTOR_SIZE 512
 #define VIRTQ_ENTRY_NUM 16
 #define VIRTIO_DEVICE_BLK 2
@@ -49,14 +51,6 @@
 #define VIRTQ_AVAIL_F_NO_INTERRUPT 1
 #define VIRTIO_BLK_T_IN 0
 #define VIRTIO_BLK_T_OUT 1
-
-/* struct process { */
-/* int pid;              // 0 if it's an idle process */
-/* int state;            // PROC_UNUSED, PROC_RUNNABLE, PROC_EXITED */
-/* vaddr_t sp;           // kernel stack pointer */
-/* uint32_t *page_table; // points to first level page table */
-/* uint8_t stack[8192];  // kernel stack */
-/* }; */
 
 struct sbiret {
   long error;
